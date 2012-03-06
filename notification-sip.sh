@@ -15,16 +15,16 @@ OPTIONS:
 EOF
 }
 
-while getopots "T:H:S:" OPTION
+while getopts "T:H:S:N:h" OPTION
 do
 	case $OPTION in
 		H)
-			HOSTNAME=$OPTARG
+			HOSTNAME="$OPTARG"
 			;;
 		T)
-			if [ "$OPTARG" == "HOST" |  "$OPTARG" == "SERVICE" ]
+			if [ "$OPTARG" == "HOST" -o  "$OPTARG" == "SERVICE" ]
 			then
-				TYPE=$OPTARG
+				TYPE="$OPTARG"
 			else
 				echo "Type $OPTARG not allowed. See help"
 				usage
@@ -34,7 +34,7 @@ do
 		S)	
 			if [ "$TYPE" == "SERVICE" ]
 			then
-				SERVICE=$OPTARG
+				SERVICE="$OPTARG"
 			else
 				echo "Could not specify service if problem type is not SERVICE"
 				usage
@@ -42,7 +42,7 @@ do
 			fi
 			;;
 		N)
-			SIP_NUMBER=$OPTARG
+			SIP_NUMBER="$OPTARG"
 			;;
 		h|?)
 			usage
@@ -50,6 +50,18 @@ do
 			;;
 	esac
 done
+
+if [ -z "$HOSTNAME" -o -z "$TYPE" -o -z "$SIP_NUMBER" ]
+then
+	echo "You should define all your variables"
+	usage
+	exit 1
+elif [ "$TYPE" == "SERVICE" -a -z "$SERVICE" ]
+then
+	echo "If problem type is SERVICE, you should define a service with -S"
+	usage
+	exit 1
+fi
 
 make_env () {
 	ESPEAK=/usr/bin/espeak
@@ -79,15 +91,15 @@ create_wav_message () {
 make_call () {
 	$LINPHONECSH soundcard "use files"
 	$LINPHONECSH generic "play $FILE"
-	$LINPHONECSH generic "call $SIPNUMBER"
+	$LINPHONECSH generic "call $SIP_NUMBER"
 }
 
 remove_wav_message() {
-	rm -rf $WAV_MESSAGE
+	rm -rf $FILE
 }
 
 make_env
 define_message
 create_wav_message
 make_call
-remove_wav_message
+#remove_wav_message
