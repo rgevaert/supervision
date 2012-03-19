@@ -1,0 +1,91 @@
+#!/bin/bash
+
+IPTABLES=/sbin/iptables
+RETURN_CODE=0
+OUTPUT=''
+
+usage () {
+cat << EOF
+$scriptname -i input_policy -o output_policy -f forward_policy
+
+This script will exit as critical if one of defined policy is not set as expected.
+Options :
+	-i (ACCEPT|DROP|QUEUE|RETURN)
+	-o (ACCEPT|DROP|QUEUE|RETURN)
+	-f (ACCEPT|DROP|QUEUE|RETURN)
+EOF
+}
+
+check_policy () {
+        CURRENT_POLICY=$(cat $FILE | grep $CHAIN | cut -d' ' -f4)
+        OUTPUT="$OUTPUT $CHAIN is $CURRENT_POLICY ;"
+        if [ "$CURRENT_POLICY" != "$EXPECTED_POLICY" ]
+	then
+                RETURN_CODE=2
+	fi
+}
+
+COUNT=0
+while getopts "i:o:f:" POLICY; do
+	case $POLICY in
+		i)
+			EXPECTED_INPUT_POLICY="$OPTARG"
+			COUNT=$(( $COUNT + 1 ))
+			;;
+		o)
+			EXPECTED_OUTPUT_POLICY="$OPTARG"
+			COUNT=$(( $COUNT + 1 ))
+			;;
+		f)
+			EXPECTED_FORWARD_POLICY="$OPTARG"
+			COUNT=$(( $COUNT + 1 ))
+			;;
+		?)
+			usage
+			exit 1
+	esac
+done
+
+if [ $COUNT -eq 0 ]
+then
+	echo "You should provide at least one CHAIN to test"
+	usage
+	exit 1
+fi
+
+FILE=$(mktemp /tmp/$scriptname.XXXXXX)
+trap "rm -f $FILE" EXIT
+$IPTABLES -L -v -n | grep policy > $FILE
+
+if [ $EXPECTED_INPUT_POLICY ]
+then
+	CHAIN='INPUT'
+	EXPECTED_POLICY=$EXPECTED_INPUT_POLICY
+	check_policy
+fi
+
+if [ $EXPECTED_OUTPUT_POLICY ]
+then
+	CHAIN='OUTPUT'
+	EXPECTED_POLICY="$EXPECTED_OUTPUT_POLICY"
+	check_policy
+fi
+
+if [ $EXPECTED_FORWARD_POLICY ]
+then
+	CHAIN='FORWARD'
+	EXPECTED_POLICY="$EXPECTED_FORWARD_POLICY"
+	check_policy
+fi
+
+
+if [ $RETURN_CODE -ne 0 ]
+then
+	echo "ERROR : $OUTPUT"
+else
+	echo "OK : $OUTPUT"
+fi
+
+rm -rf $FILE
+trap - EXIT
+exit $RETURN_CODE
