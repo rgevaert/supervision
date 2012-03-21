@@ -1,19 +1,11 @@
 #!/usr/bin/perl
 
-#use LWP::Simple;
-#use LWP::UserAgent;
-#use LWP::Protocol::https;
+#README :
 #
-#$user_agent=LWP::UserAgent->new(
-#	ssl_opts => {
-#		veriry_hostname => 0,
-#	},
-#);
-#$user_agent->credentials("$foreman_url:80",$realm,$user,$password);
-#$user_agent->default_header('Content-Type' => 'application/json');
-#$user_agent->default_header('Accept' => 'application/json');
-#$user_agent->default_header('Authozation' => 'Basic'.encode_base64($username . ':' . $password));
-#my $response = $user_agent->get("http://$foreman_url/hosts/puppet.yzserv.com/reports/last");
+#This script use REST::Client which is not packaged in Debian at this time (03/21/2012)
+#To install it, use cpan :
+#install REST::Client
+#
 
 use warnings;
 use utf8;
