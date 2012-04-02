@@ -129,9 +129,6 @@ do {
 		$error_counter++;
 	}
 	$i++;
-	print "I IS : $i\n";
-	print "FAILURE is $tab[$i]{'report'}->{'status'}->{'failed'}\n";
-	print "RESTART_FAILURE IS $tab[$i]{'report'}->{'status'}->{'failed_restarts'}\n";
 			
 } while (($tab[$i-1]{'report'}->{'status'}->{'failed'} != 0 or $tab[$i-1]{'report'}->{'status'}->{'failed_restarts'} !=0) and $i <= $run_number);
 
