@@ -125,11 +125,15 @@ if ($size_tab < $critical){
 $i=0;
 do {
 	if ($tab[$i]{'report'}->{'status'}->{'failed'} != 0 or $tab[$i]{'report'}->{'status'}->{'failed_restarts'} !=0) {
+		printf "report = $i and failed = $tab[$i]{'report'}->{'status'}->{'failed'} and restart = $tab[$i]{'report'}->{'status'}->{'failed_restarts'}\n";
 		$error_counter++;
 	}
 	$i++;
-	
-} while (($tab[$i]{'report'}->{'status'}->{'failed'} != 0 or $tab[$i]{'report'}->{'status'}->{'failed_restarts'} !=0) and $i < $run_number);
+	print "I IS : $i\n";
+	print "FAILURE is $tab[$i]{'report'}->{'status'}->{'failed'}\n";
+	print "RESTART_FAILURE IS $tab[$i]{'report'}->{'status'}->{'failed_restarts'}\n";
+			
+} while (($tab[$i-1]{'report'}->{'status'}->{'failed'} != 0 or $tab[$i-1]{'report'}->{'status'}->{'failed_restarts'} !=0) and $i <= $run_number);
 
 
 if ($error_counter==0){
