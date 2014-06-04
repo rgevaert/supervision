@@ -126,13 +126,16 @@ if ($size_tab < $critical){
 
 $i=0;
 do {
-	if ($tab[$i]{'report'}->{'status'}->{'failed'} != 0 or $tab[$i]{'report'}->{'status'}->{'failed_restarts'} !=0) {
+        # the hash value will contain 0 if nothing failed
+        # if the node does not have any reports the hash will not be filled so it will evaluate to false
+        # see also the while test below
+	if ($tab[$i]{'report'}->{'status'}->{'failed'} or $tab[$i]{'report'}->{'status'}->{'failed_restarts'} ) {
 		printf "report = $i and failed = $tab[$i]{'report'}->{'status'}->{'failed'} and restart = $tab[$i]{'report'}->{'status'}->{'failed_restarts'}\n";
 		$error_counter++;
 	}
 	$i++;
 			
-} while (($tab[$i-1]{'report'}->{'status'}->{'failed'} != 0 or $tab[$i-1]{'report'}->{'status'}->{'failed_restarts'} !=0) and $i <= $run_number);
+} while (($tab[$i-1]{'report'}->{'status'}->{'failed'} or $tab[$i-1]{'report'}->{'status'}->{'failed_restarts'}) and $i <= $run_number);
 
 
 if ($error_counter==0){
