@@ -15,6 +15,8 @@ use Data::Dumper;
 use REST::Client;
 use Getopt::Std;
 
+$ENV{PERL_LWP_SSL_VERIFY_HOSTNAME}=0;
+
 my $headers = {Content_Type => 'application/json', Accept => 'application/json' };
 my $client = REST::Client->new();
 my $username;
