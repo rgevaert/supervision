@@ -105,7 +105,7 @@ if($username and $password){
 
 
 #We get all the reports
-my $response = $client->GET("/hosts/$host_fqdn/reports",$headers);
+my $response = $client->GET("api/hosts/$host_fqdn/reports",$headers);
 my $responseCode=$response->responseCode();
 if ($responseCode != 200 ){
 	printf "Problem with Foreman Server. ReponseCode is $responseCode. Check your server log. Exiting\n";
